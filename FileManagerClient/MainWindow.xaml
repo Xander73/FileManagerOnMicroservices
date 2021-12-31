@@ -1,0 +1,62 @@
+﻿<Window x:Class="FileManagerClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileManagerClient"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="914" MinWidth="460">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition ></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="label" Content="Текущая папка" Grid.Column="0" Grid.Row="0" />
+            <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="Путь к текущей папке" Width="auto" Height="30" TextAlignment="Left" LineStackingStrategy="MaxHeight" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Margin="0,0,0,0" Padding="0,5,0,0" />
+        </Grid>
+        <ToolBar x:Name="toolBar" Grid.Row="1">
+            <Label x:Name="lblDrives" Content="Диск"/>
+            <ComboBox x:Name="cmbDrives" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60"/>
+            <Button x:Name="btnCopy" Content="Копировать" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="btnPaste" Content="Вставить" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="btnRename" Content="Переименовать" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Login_Click"/>
+            <Button x:Name="btnFinde" Content="Искать" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtbFinde" TextWrapping="Wrap" Text="Поиск..." VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="150"/>
+        </ToolBar>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Name="ФайлыИПапки" Width="75*"></ColumnDefinition>
+                <ColumnDefinition Width="382*"/>
+                <ColumnDefinition Name="Атрибуты" Width="457*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Grid.ColumnSpan="2">
+                <ListBox x:Name="foldersFiles" PreviewMouseLeftButtonDown ="ListBox_MouseLeftDown"/>
+            </Grid>
+
+            <Grid Grid.Column="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" x:Name="textBox" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Stretch" />
+                    <TextBox Grid.Row="1" x:Name="textBox1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBox1" VerticalAlignment="Stretch"/>
+
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
