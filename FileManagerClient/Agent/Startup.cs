@@ -1,5 +1,4 @@
 ﻿using FileManagerClient.Agent.Client;
-using FileManagerClient.Agent.Client.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,10 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Polly;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileManagerClient.Agent
 {
@@ -27,7 +22,7 @@ namespace FileManagerClient.Agent
 
         public void ConfigureServices(IServiceCollection servises)
         {
-            servises.AddHttpClient<IFileManagerInformatorClient, FileManagerInformatorAgentClient>()
+            servises.AddHttpClient<FileManagerInformatorAgentClient, FileManagerInformatorAgentClient>()
                 .AddTransientHttpErrorPolicy(p => p
                 .WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(1000)));
                 

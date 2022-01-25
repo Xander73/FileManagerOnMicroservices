@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Models.Requests
 {
-    public class AllDrivesRequest
+    public class ALLItemsRequest
     {
+        public string PathRequiredFolder { get; set; }
         public string ClientBaseAddres { get; set; }
     }
 }

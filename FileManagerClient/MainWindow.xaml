@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileManagerClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="914" MinWidth="460">
+        Title="MainWindow" Height="450" Width="1018" MinWidth="460">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -18,19 +18,25 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="305*"></ColumnDefinition>
+                <ColumnDefinition Width="509*"/>
             </Grid.ColumnDefinitions>
             <Label x:Name="label" Content="Текущая папка" Grid.Column="0" Grid.Row="0" />
-            <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="Путь к текущей папке" Width="auto" Height="30" TextAlignment="Left" LineStackingStrategy="MaxHeight" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Margin="0,0,0,0" Padding="0,5,0,0" />
+            <TextBlock x:Name="currentPath" TextWrapping="Wrap" Text="Путь к текущей папке" Width="auto" Height="30" TextAlignment="Left" LineStackingStrategy="MaxHeight" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Padding="0,5,0,0" />
         </Grid>
         <ToolBar x:Name="toolBar" Grid.Row="1">
             <Label x:Name="lblDrives" Content="Диск"/>
-            <ComboBox x:Name="cmbDrives" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60"/>
-            <Button x:Name="btnCopy" Content="Копировать" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <Button x:Name="btnPaste" Content="Вставить" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <Button x:Name="btnRename" Content="Переименовать" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Login_Click"/>
-            <Button x:Name="btnFinde" Content="Искать" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBox x:Name="txtbFinde" TextWrapping="Wrap" Text="Поиск..." VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="150"/>
+            <ComboBox x:Name="cmbDrives" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60" SelectionChanged="cmbDrives_SelectionChanged"/>
+            <Button x:Name="btnBack" Content="Назад" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnBack_Click" Background ="#A7A7A7"/>
+            <Button x:Name="btnCreate" Content="Создать" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnCreate_Click"/>
+            <Button x:Name="btnCopy" Content="Копировать" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnCopy_Click"/>
+            <Button x:Name="btnPaste" Content="Вставить" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPaste_Click"/>
+            <Button x:Name="btnDelete" Content="Удалить" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnDelete_Click"/>
+            <Button x:Name="btnRename" Content="Переименовать" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Rename_Click"/>
+            <Button x:Name="btnSize" Content="Размер" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Size_Click"/>
+            <Button x:Name="btnFinde" Content="Искать" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnFinde_Click"/>
+            <TextBox x:Name="tbSearch" TextWrapping="Wrap" Text="Поиск..." VerticalAlignment="Center" HorizontalAlignment="Left" MinWidth="150" GotFocus="txtbFinde_GotFocus"/>
+            
         </ToolBar>
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
@@ -38,22 +44,28 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Name="ФайлыИПапки" Width="75*"></ColumnDefinition>
-                <ColumnDefinition Width="382*"/>
-                <ColumnDefinition Name="Атрибуты" Width="457*"></ColumnDefinition>
+                <ColumnDefinition Width="660*"/>
+                <ColumnDefinition Name="Атрибуты" Width="179*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" Grid.ColumnSpan="2">
-                <ListBox x:Name="foldersFiles" PreviewMouseLeftButtonDown ="ListBox_MouseLeftDown"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="59*"/>
+                    <ColumnDefinition Width="88*"/>
+                </Grid.ColumnDefinitions>
+                <ListBox x:Name="foldersFiles" SelectionChanged="foldersFiles_SelectionChanged_1" MouseDoubleClick="OnFoldersFiles_mouseDoubleClick" Grid.ColumnSpan="2"/>
             </Grid>
 
             <Grid Grid.Column="2">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="9*"></RowDefinition>
+                        <RowDefinition Height="25*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" x:Name="textBox" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Stretch" />
-                    <TextBox Grid.Row="1" x:Name="textBox1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="TextBox1" VerticalAlignment="Stretch"/>
+                    <TextBox x:Name="tbItemInfo" TextWrapping="Wrap" Text="" Margin="0,99,0,0" Grid.RowSpan="2"/>
+                    <CheckBox x:Name="chbHidden" Content="Скрытый" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Checked="chbHidden_Checked" Height="15" Width="80"/>
+                    <CheckBox x:Name="chbReadOnly" Content="Только чтение" HorizontalAlignment="Left" Margin="10,67,0,0" VerticalAlignment="Top" Checked="chbReadOnly_Checked" Height="15" Width="105"/>
+                    <Label x:Name="Attributes" Content="Свойства" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
 
                 </Grid>
             </Grid>

@@ -1,12 +1,10 @@
 ﻿
 
-namespace FileManagerClient.Agent.Models
+namespace Core.Models
 {
+    [Serializable]
     public class AttributesTextFile
     {        
-        public int Size { get; set; }
-        public bool Hidden { get; set; }
-        public bool ReadOnly { get; set; }
         public int Paragraphes { get; set; }
         public int Words { get; set; }
         public int Chars { get; set; }

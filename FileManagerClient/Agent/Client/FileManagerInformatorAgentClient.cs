@@ -1,20 +1,13 @@
-﻿using FileManagerClient.Agent.Client.Interface;
-using FileManagerClient.Agent.Interface;
-using FileManagerClient.Agent.Models.Requests;
-using FileManagerClient.Agent.Models.Responses;
-using Microsoft.Extensions.Logging;
-using NLog;
-using NLog.Targets;
+﻿using Core.Models.Requests;
+using Core.Models.Responses;
+using FileManagerClient.Agent.Client.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FileManagerClient.Agent.Client
 {
-    public class FileManagerInformatorAgentClient : IFileManagerInformatorClient
+    public class FileManagerInformatorAgentClient : IFileManagerInformatorAgentClient
     {
         HttpClient _httpClient;
 
@@ -26,24 +19,35 @@ namespace FileManagerClient.Agent.Client
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             //_logger = logger;
         }
-        public void CopyFolder(string oldName, string newName)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void CreateFolder()
+        public FolderAddInformationResponse AdditionalInformation(
+            FolderAddInformationResponseRequest request)
         {
-            throw new NotImplementedException();
-        }
+            var httpRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                @$"{request.ClientBaseAddres}/api/filemanagerinformator/size"
+                + @$"pathItem={request.PathItem}"
+                );
 
-        public void CreateFolder(string nameFolder)
-        {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var httpResponse = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = httpResponse.Content.ReadAsStreamAsync().Result)
+                {
+                    var result = JsonSerializer.DeserializeAsync<string>(responseStream, _options).Result;
 
-        public void DeleteFolder(string fullName)
-        {
-            throw new NotImplementedException();
+                    return new FolderAddInformationResponse()
+                    {
+                        AddInformation = result
+                    };
+                }
+            }
+            catch (Exception e)
+            {
+
+                string s = e.Message;
+            }
+            return new FolderAddInformationResponse();
         }
 
         public AllDrivesResponse GetDrives(AllDrivesRequest request)
@@ -69,24 +73,103 @@ namespace FileManagerClient.Agent.Client
             return null;
         }
 
-        public IEnumerable<string> GetItemsInFolder()
+        public ALLItemsResponse GetItemsInFolder(ALLItemsRequest request)
         {
-            throw new NotImplementedException();
+            var httpRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                @$"{request.ClientBaseAddres}/api/filemanagerinformator/directories?" 
+                + @$"requiredDirectory={request.PathRequiredFolder}"
+                );
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    var items = JsonSerializer.DeserializeAsync<ALLItemsResponse>(responseStream, _options).Result;
+                    return items;
+                }
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex.Message);
+            }
+
+            return new ALLItemsResponse();
         }
 
-        public void RenameFolder(string oldName, string newName)
+        public AllMyFilesResponse PostMyFiles(ALLItemsRequest request)
         {
-            throw new NotImplementedException();
+            var httpRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                @$"{request.ClientBaseAddres}/api/filemanagerinformator/files?"
+                + @$"requiredDirectory={request.PathRequiredFolder}"
+                );
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    var items = JsonSerializer.DeserializeAsync<AllMyFilesResponse>(responseStream, _options).Result;
+                    return items;
+                }
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex.Message);
+            }
+
+            return new AllMyFilesResponse();
         }
 
-        public List<string> Search(string path, string name)
+        public AllMyFoldersResponse PostMyFolders(ALLItemsRequest request)
         {
-            throw new NotImplementedException();
+            var httpRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                @$"{request.ClientBaseAddres}/api/filemanagerinformator/directories?" 
+                + @$"requiredDirectory={request.PathRequiredFolder}"
+                );
+
+            try
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    var items = JsonSerializer.DeserializeAsync<AllMyFoldersResponse>(responseStream, _options).Result;
+                    return items;
+                }
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex.Message);
+            }
+
+            return new AllMyFoldersResponse();
         }
 
-        public int SizeFolder(string name)
+        
+        public ALLItemsResponse PostSearch(SearchItemRequest request)
         {
-            throw new NotImplementedException();
-        }        
+            var httpRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                @$"{request.ClientBaseAddres}/api/filemanagerinformator/search?"
+                + @$"pathFolder={request.PathFolder}&searchNameItem={request.SearchNameItem}");
+            try
+            {
+                HttpResponseMessage response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    var item = JsonSerializer.Deserialize<ALLItemsResponse>(responseStream, _options);
+                    return item;
+                }
+            }
+            catch (Exception e )
+            {
+
+                string d = e.Message;
+            }
+            return new ALLItemsResponse();
+        }      
     }
 }

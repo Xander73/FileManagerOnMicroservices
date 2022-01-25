@@ -13,7 +13,7 @@ namespace Core.Tests
         public MyFolderTests()
         {
             myFolder = new MyFolder(Directory.GetCurrentDirectory() + "\\TestDirectory");
-            Directory.CreateDirectory(myFolder.CurrentPath);
+            Directory.CreateDirectory(myFolder.FullPath);
         }
 
 
@@ -22,7 +22,7 @@ namespace Core.Tests
        {
             myFolder.CreateFolder();
 
-            Assert.True(Directory.Exists(myFolder.CurrentPath + "\\New Folder"));
+            Assert.True(Directory.Exists(myFolder.FullPath + "\\New Folder"));
         }
 
 
@@ -31,7 +31,7 @@ namespace Core.Tests
         {
             myFolder.CreateFolder("NameFolder");
 
-            Assert.True(Directory.Exists(myFolder.CurrentPath + "\\NameFolder"));
+            Assert.True(Directory.Exists(myFolder.FullPath + "\\NameFolder"));
         }
 
 
@@ -43,7 +43,7 @@ namespace Core.Tests
 
             myFolder.DeleteFolder(nameFolder);
 
-            Assert.False(Directory.Exists(myFolder.CurrentPath + "\\" + nameFolder));
+            Assert.False(Directory.Exists(myFolder.FullPath + "\\" + nameFolder));
         }
 
 
@@ -53,10 +53,10 @@ namespace Core.Tests
             string oldFolder = "OldFolder";
             string newFolder = "RenamedFolder";
             myFolder.CreateFolder(oldFolder);
-            Directory.Delete(myFolder.CurrentPath + "\\" + newFolder);
+            Directory.Delete(myFolder.FullPath + "\\" + newFolder);
             myFolder.RenameFolder(oldFolder, newFolder);
 
-            bool isResult = Directory.Exists(myFolder.CurrentPath + "\\" + newFolder);
+            bool isResult = Directory.Exists(myFolder.FullPath + "\\" + newFolder);
             
 
             Assert.True(isResult);
@@ -67,14 +67,14 @@ namespace Core.Tests
         public void CopyFolder_FolderToDelete_FalsseReturned()
         {
             string oldFolder = "CopyFolder";
-            using (File.Create(myFolder.CurrentPath + '\\' + oldFolder + "\\copyFolder")) { } ;
+            using (File.Create(myFolder.FullPath + '\\' + oldFolder + "\\copyFolder")) { } ;
             string newFolder = "CopyedFolder";
             myFolder.CreateFolder("\\" + newFolder);
 
-            myFolder.CopyFolder(oldFolder, myFolder.CurrentPath + '\\' + newFolder) ;
+            myFolder.CopyFolder(oldFolder, myFolder.FullPath + '\\' + newFolder) ;
 
             string[] excpected = { "copyFolder" };
-            string[] str = Directory.GetFiles(myFolder.CurrentPath + '\\' + newFolder);
+            string[] str = Directory.GetFiles(myFolder.FullPath + '\\' + newFolder);
 
 
             List<string> actual = new List<string>();
@@ -93,7 +93,7 @@ namespace Core.Tests
         {
             int expected = 9;
 
-            int actual = myFolder.SizeFolder(myFolder.CurrentPath);
+            int actual = myFolder.SizeFolder(myFolder.FullPath);
 
             Assert.Equal(expected, actual);
         }
@@ -105,7 +105,7 @@ namespace Core.Tests
             myFolder.CreateFolder("SearchedDirrectory");
             List <string> expected = new List<string>() { @"D:\0_work\C#\FileManagerOnMicroservices\Core.Tests\bin\Debug\net6.0\TestDirectory\SearchedDirrectory" };
 
-            var actual = myFolder.Search(myFolder.CurrentPath, "SearchedDirrectory");
+            var actual = myFolder.Search(myFolder.FullPath, "SearchedDirrectory");
 
             Assert.Equal(expected, actual);
         }

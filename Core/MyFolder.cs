@@ -3,52 +3,53 @@
 
 namespace Core
 {
-    public class MyFolder : IMyFolder
+    public class MyFolder : Item, IMyFolder
     {
-        public string CurrentPath { get; set; }
         public int FilesInFolder { get; set; }
         public int FoldersInFolder { get; set; }
-        public int SizeFolders { get; set; } = 0;
+        public long SizeFolders { get; set; } = 0;
 
         public MyFolder(string path)
         {
-            CurrentPath = path;
-            
+            FullPath = path;
+            Name = Path.GetFileName(path);
         }
 
 
         public void CreateFolder()
         {
-            Directory.CreateDirectory(CurrentPath + '\\' + "New Folder") ;
+            Directory.CreateDirectory(FullPath + '\\' + "New Folder") ;
         }
 
 
-        public void CreateFolder(string nameFolder)
+        public void CreateFolder(string pathNewFolder)
         {
-            Directory.CreateDirectory(CurrentPath + '\\' + nameFolder) ;
+            Directory.CreateDirectory(pathNewFolder);
         }
 
 
-        public void DeleteFolder(string name)
+        public void DeleteFolder(string pathDelete)
         {
-            Directory.Delete(CurrentPath + '\\' + name);
+            Directory.Delete(pathDelete, true);
         }
 
 
         public void RenameFolder(string oldName, string newName)
         {
-            Directory.Move(CurrentPath + '\\' + oldName, CurrentPath + '\\' + newName);
+            Directory.Move(oldName, newName);
         }
 
-
-        public void CopyFolder(string folderName, string newPath)
+        
+        public void CopyFolder(string pathOldFolder, string pathNewFolder)
         {
-            foreach (string dirPath in Directory.GetDirectories(CurrentPath + '\\' + folderName, "*",
+            Directory.CreateDirectory(pathNewFolder);
+            foreach (string dirPath in Directory.GetDirectories(pathOldFolder, "*",
                         SearchOption.AllDirectories))
             {
+                string s = dirPath.Replace(pathOldFolder, pathNewFolder);
                 try
                 {
-                    Directory.CreateDirectory(dirPath.Replace(CurrentPath + '\\' + folderName, newPath + '\\' + folderName));
+                    Directory.CreateDirectory(dirPath.Replace(pathOldFolder, pathNewFolder));
                 }
                 catch (Exception e)
                 {
@@ -56,83 +57,123 @@ namespace Core
                 }
             }
 
-            //Копировать все файлы и перезаписать файлы с идентичным именем
-            foreach (string newFilePath in Directory.GetFiles(CurrentPath + '\\' + folderName, "*.*",
+            foreach (string newFilePath in Directory.GetFiles(pathOldFolder, "*.*",
                         SearchOption.AllDirectories))
             {
                 try
                 {
-                    File.Copy(newFilePath, newFilePath.Replace(CurrentPath + '\\' + folderName, newPath), true);
+                    string s = newFilePath.Replace(pathOldFolder, pathNewFolder);
+                    File.Copy(newFilePath, newFilePath.Replace(pathOldFolder, pathNewFolder), true);
                 }
                 catch (Exception e)
                 {
-                    throw e;
+                    string s = e.Message;
                 }
             }
         }
 
 
-        public int SizeFolder(string name)
+        public void SizeFolder(string name)
         {
-            string[] files = Directory.GetFiles(name);
-            FilesInFolder += files.Length;
-            foreach (string file in files)
+            if (new DirectoryInfo(name).Attributes.HasFlag(FileAttributes.System)) 
             {
-                SizeFolders +=  File.ReadAllBytes(file).Length;
+                return;
             }
-
-            string[] folders = Directory.GetDirectories(name);
-            FoldersInFolder += folders.Length;
-
-            foreach (string folder in folders)
+            try
             {
-                SizeFolder(folder);
+                string[] files = Directory.GetFiles(name);
+                FilesInFolder += files.Length;
+                foreach (string file in files)
+                {
+                    SizeFolders += new FileInfo(file).Length;
+                }
+
+                string[] folders = Directory.GetDirectories(name);
+                FoldersInFolder += folders.Length;
+
+                foreach (string folder in folders)
+                {
+                    if (!new DirectoryInfo(folder).Attributes.HasFlag(FileAttributes.System))
+                    {
+                        SizeFolder(folder);
+                    }
+                }
             }
-            return SizeFolders;
+            catch (Exception e)
+            {
+                string s = e.Message;
+                return;
+            }
         }
 
 
-        public List<string> Search(string path, string nameSearch)
+        public static List<Item> Search(string path, string nameSearch)
         {
-            List<string> results = new List<string>();
+            List<Item> results = new List<Item>();
+
+            results.AddRange(SearchFolderInCurrentFolder(path, nameSearch));
+            results.AddRange(SearchFilesInCurrentFolder(path, nameSearch));
+            return results;
+        }
+
+
+        public static List<Item> SearchFolderInCurrentFolder(string path, string nameSearch)
+        {
+            List<Item> results = new List<Item>();
+            try
+            {                
+                string[] folders = Directory.GetDirectories(path);
+                foreach (string item in folders)
+                {
+                    string str = Path.GetFileName(item);
+                    if (nameSearch == Path.GetFileNameWithoutExtension(item))
+                    {
+                        results.Add(new Item()
+                        {
+                            Name = Path.GetFileName(item),
+                            FullPath = item,
+                            FolderOrFile = TypeItem.Folder
+                        });
+                    }
+                    results.AddRange(Search(item, nameSearch));
+                }
+            }
+            catch (Exception e)
+            {
+
+                string s = e.Message;
+            }
+            
+            return results;
+        }
+
+
+        public static List<Item> SearchFilesInCurrentFolder(string path, string nameSearch)
+        {
+            List<Item> results = new List<Item>();
             string[] files = Directory.GetFiles(path);
             foreach (string file in files)
             {
-                if (nameSearch == Path.GetDirectoryName(file))
+                if (nameSearch == Path.GetFileNameWithoutExtension(file))
                 {
-                    results.Add(file);
+                    results.Add(new Item()
+                    {
+                        Name = Path.GetFileName(file),
+                        FullPath = file,
+                        FolderOrFile = TypeItem.File
+                    });
                 }
             }
-
-            string[] folders = Directory.GetDirectories(path);
-
-            foreach (string item in folders)
-            {
-                string str = Path.GetFileName(item);
-                if (nameSearch == Path.GetFileName(item))
-                {
-                    results.Add(item);
-                }
-                results.AddRange(Search(item, nameSearch));
-            }
-
             return results;
         }
 
 
         public IEnumerable<string> GetItemsInFolder()
         {
-            string[] folders = Directory.GetDirectories(CurrentPath);
-            string[] files = Directory.GetFiles(CurrentPath);
+            string[] folders = Directory.GetDirectories(FullPath);
+            string[] files = Directory.GetFiles(FullPath);
 
             return folders.Concat(files);
-        }
-
-
-        public string GetName(string fullPath)
-        {
-            int index = fullPath.LastIndexOf('\\');
-            return fullPath.Substring(index, fullPath.Length - 1 - index);
         }
     }
 }

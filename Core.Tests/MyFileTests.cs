@@ -27,7 +27,7 @@ namespace Core.Tests
         {
             myFile.CreateFile();
 
-            Assert.True(File.Exists(myFile.FilePath  + myFile.NameToPath()));
+            Assert.True(File.Exists(myFile.FullPath  + myFile.NameToPath()));
         }
 
 
@@ -37,40 +37,40 @@ namespace Core.Tests
             string fileName = "CreateFile";
             myFile.CreateFile(fileName);
 
-            Assert.True(File.Exists(myFile.FilePath + '\\' + fileName));
+            Assert.True(File.Exists(myFile.FullPath + '\\' + fileName));
         }
 
 
         [Fact]
         public void Delete_CurrentDir_TrueReturned()
         {
-            IMyFile myFileTemp = new MyFile(myFile.FilePath, "NewFileToDelete");
+            IMyFile myFileTemp = new MyFile(myFile.FullPath, "NewFileToDelete");
             myFileTemp.CreateFile(myFileTemp.Name);
             myFileTemp.DeleteFile();
 
-            Assert.False(File.Exists(myFileTemp.FilePath + myFileTemp.NameToPath()));
+            Assert.False(File.Exists(myFileTemp.FullPath + myFileTemp.NameToPath()));
         }
 
 
         [Fact]
         public void RenameFile_CurrentDir_TrueReturned()
         {
-            IMyFile myFileTemp = new MyFile(myFile.FilePath, "NewFileToRename");
+            IMyFile myFileTemp = new MyFile(myFile.FullPath, "NewFileToRename");
             myFileTemp.CreateFile(myFileTemp.Name);
             myFileTemp.RenameFile("RenamedFile");
 
-            Assert.True(File.Exists(myFileTemp.FilePath + myFileTemp.NameToPath()));
+            Assert.True(File.Exists(myFileTemp.FullPath + myFileTemp.NameToPath()));
         }
 
 
         [Fact]
         public void CopyFile_CurrentDirAndCurrentDirTest_TrueReturned()
         {
-            IMyFile myFileTemp = new MyFile(myFile.FilePath, "NewFileToCopy");
+            IMyFile myFileTemp = new MyFile(myFile.FullPath, "NewFileToCopy");
             myFileTemp.CreateFile(myFileTemp.Name);
-            IMyFile actual = myFileTemp.CopyFile(myFile.FilePath, "CopiedFile");
+            IMyFile actual = myFileTemp.CopyFile(myFile.FullPath, "CopiedFile");
 
-            Assert.True(File.Exists(myFileTemp.FilePath + myFileTemp.NameToPath()));
+            Assert.True(File.Exists(myFileTemp.FullPath + myFileTemp.NameToPath()));
         }
 
 
@@ -88,7 +88,7 @@ namespace Core.Tests
         public void GetFileAttributes_NotTxtFile_ArchiveReturned()
         {
             string testFile = "TestFile";
-            IMyFile myFileTemp = new MyFile(myFile.FilePath, testFile);
+            IMyFile myFileTemp = new MyFile(myFile.FullPath, testFile);
             myFile.CreateFile("TestFile");
 
             string execute = "Archive";
@@ -103,7 +103,7 @@ namespace Core.Tests
         public void GetFileAttributes_TxtFile_TextAttributesReturned()
         {
             string testFile = "test.txt";
-            IMyFile myFileTemp = new MyFile(myFile.FilePath, testFile);
+            IMyFile myFileTemp = new MyFile(myFile.FullPath, testFile);
 
             string execute = "Paragraphes - 1\nWords - 4\nChars - 15\nChars without space - 13\nArchive";
 
@@ -117,7 +117,7 @@ namespace Core.Tests
         public void SetFileAttributes_Hiden_HidenReturned()
         {
             string testFile = "tests.txt";
-            IMyFile myFileTemp = new MyFile(myFile.FilePath, testFile);
+            IMyFile myFileTemp = new MyFile(myFile.FullPath, testFile);
             myFile.CreateFile();
 
             myFile.SetFileAttributes(FileAttributes.Hidden);

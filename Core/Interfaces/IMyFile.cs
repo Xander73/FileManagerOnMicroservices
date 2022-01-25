@@ -4,11 +4,6 @@ namespace Core.Interfaces
 {
     public interface IMyFile
     {
-        string Name { get; set; }
-
-        string FilePath { get; set; }
-
-
         string NameToPath();
 
 
@@ -18,10 +13,10 @@ namespace Core.Interfaces
         void CreateFile(string name);
 
 
-        void DeleteFile();
+        void DeleteFile(string pathDelete);
 
 
-        void RenameFile(string newName);
+        void RenameFile(string oldFile, string newFile);
 
 
         MyFile CopyFile(string newFullPath, string newName);
@@ -36,6 +31,6 @@ namespace Core.Interfaces
         public string SetFileAttributes(FileAttributes attributes);
 
 
-        string TextFileInformmation();
+        Dictionary<string, int> TextFileInformmation();
     }
 }

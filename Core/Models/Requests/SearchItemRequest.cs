@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core.Models.Requests
 {
-    public class AllDrivesRequest
+    public class SearchItemRequest
     {
         public string ClientBaseAddres { get; set; }
+        public string PathFolder { get; set; }
+        public string SearchNameItem { get; set; }
     }
 }

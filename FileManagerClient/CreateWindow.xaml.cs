@@ -1,13 +1,17 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 
 namespace FileManagerClient
 {
-    public partial class RenameWindow : Window
+    public partial class CreateWindow : Window
     {
-        public RenameWindow()
+        public CreateWindow()
         {
             InitializeComponent();
-            newName.Focus();
+            tbCreateNewName.Focus();
         }
 
         private void Accept_Click(object sender, RoutedEventArgs e)
@@ -17,7 +21,7 @@ namespace FileManagerClient
 
         public string NewName
         {
-            get { return newName.Text; }
+            get { return tbCreateNewName.Text; }
         }
 
     }

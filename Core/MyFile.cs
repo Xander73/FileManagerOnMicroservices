@@ -2,15 +2,11 @@
 
 namespace Core
 {
-    public class MyFile : IMyFile
+    public class MyFile : Item, IMyFile
     {
-        public string Name { get ; set; }
-        public string FilePath { get; set; }
-
-
         public MyFile(string fullPath)
         {
-            FilePath = fullPath;
+            FullPath = fullPath;
             Name = Path.GetFileName(fullPath);
         }
 
@@ -19,88 +15,91 @@ namespace Core
 
         public void CreateFile()
         {
-            using (File.Create(FilePath + '\\' + "New File")) { };
+            using (File.Create(FullPath + '\\' + "New File")) { };
             Name = "New File";
         }
 
 
-        public void CreateFile(string name)
+        public void CreateFile(string pathNewFile)
         {
-            using (File.Create(FilePath + '\\' + name)) 
-            Name = name;
+            File.Create(pathNewFile);
         }
 
 
-        public void DeleteFile()
+        public void DeleteFile(string pathDelete)
         {
-            File.Delete(FilePath + NameToPath());
+            File.Delete(pathDelete);
         }
 
 
-        public void RenameFile(string newName)
-        {
-            string suffux = GetSuffixNumberIfIsEqualsFiles(FilePath, newName);
-            File.Move(FilePath + "\\" + Name, FilePath + "\\" + newName
-                + GetSuffixNumberIfIsEqualsFiles(FilePath, newName));
+        public void RenameFile(string oldFile, string newName)
+        {            
+            try
+            {
+                File.Move(oldFile, newName);
+            }
+            catch (Exception e)
+            {
+                string s = e.Message;
+            }
 
-            Name = newName;
+            Name = Path.GetFileName(newName);
         }
 
 
-        public MyFile CopyFile(string newFullPath, string newName)
+        public MyFile CopyFile(string pathOldFile, string pathNewFile)
         {
-            File.Copy(FilePath + NameToPath(), newFullPath + "\\" + newName 
-                + GetSuffixNumberIfIsEqualsFiles(FilePath, newName));
+            File.Copy(pathOldFile, GetNewNameWithSuffixNumberIfIsEqualsFiles(pathNewFile));
 
-            return new MyFile(newFullPath);
+            return new MyFile(pathNewFile);
         }
 
 
         public long SizeFile()
         {
-            return new FileInfo(FilePath + NameToPath()).Length;
+            return new FileInfo(FullPath).Length / 1000;
         }
 
         public string GetFileAttributes()
         {
             string attributes = "";
-            if (Name.EndsWith(".txt"))
-            {
-                attributes = TextFileInformmation();
-            }
-            return attributes += File.GetAttributes(FilePath + NameToPath()).ToString(); ;
+            return attributes += File.GetAttributes(FullPath + NameToPath()).ToString();
         }
 
         public string SetFileAttributes(FileAttributes attributes)
         {
-            File.SetAttributes(FilePath + NameToPath(), FileAttributes.Normal);
-            File.SetAttributes(FilePath + NameToPath(), attributes);
+            File.SetAttributes(FullPath + NameToPath(), FileAttributes.Normal);
+            File.SetAttributes(FullPath + NameToPath(), attributes);
             return GetFileAttributes(); ;
         }
 
 
-        public string TextFileInformmation()
+
+        public Dictionary<string, int> TextFileInformmation()
         {
-            if (Name.EndsWith(".txt"))
+            if (IsTextFile())
             {
-                string textFileInformation = "";
-                List<string> stringsFromFile = File.ReadAllLines(FilePath + NameToPath()).ToList();
+                Dictionary<string, int> textAttributes = new Dictionary<string, int>();
+                List<string> stringsFromFile = File.ReadAllLines(FullPath).ToList();
 
-                textFileInformation += "Paragraphes - " + GetParagraph(stringsFromFile).ToString();
+                textAttributes["Paragraphes"] = GetParagraph(stringsFromFile);
 
-                textFileInformation += "\nWords - " + GetWords(stringsFromFile).ToString();
+                textAttributes["Words"] = GetWords(stringsFromFile);
 
-                textFileInformation += "\nChars - " + GetChars(stringsFromFile).ToString();
+                textAttributes["Chars"] = GetChars(stringsFromFile);
 
-                textFileInformation += "\nChars without space - " + GetCharsWithoutSpace(stringsFromFile).ToString() + '\n';
+                textAttributes["CharsWithoutSpace"] = GetCharsWithoutSpace(stringsFromFile);
 
-                return textFileInformation;
+                return textAttributes;
             }
-            else return String.Empty;
+            else return new Dictionary<string, int>();
         }
 
 
-        private int GetParagraph(List<string> stringFromFile)
+        public bool IsTextFile () => Name.EndsWith(".txt");
+
+
+        public int GetParagraph(List<string> stringFromFile)
         {
             int paragraphs = 0;
             int spases;
@@ -126,7 +125,7 @@ namespace Core
         }
 
 
-        private int GetWords(List<string> stringFromFile)
+        public int GetWords(List<string> stringFromFile)
         {
             int words = 0;
             foreach (string item in stringFromFile)
@@ -138,7 +137,7 @@ namespace Core
         }
 
 
-        private int GetChars(List<string> stringFromFile)
+        public int GetChars(List<string> stringFromFile)
         {
             int chars = 0;
             foreach (string item in stringFromFile)
@@ -150,7 +149,7 @@ namespace Core
         }
 
 
-        private int GetCharsWithoutSpace(List<string> stringFromFile)
+        public int GetCharsWithoutSpace(List<string> stringFromFile)
         {
             int charsWithoutSpases = 0;
             foreach (string item in stringFromFile)
@@ -161,23 +160,27 @@ namespace Core
         }
 
 
-        private string GetSuffixNumberIfIsEqualsFiles(string path, string name)
+        private string GetNewNameWithSuffixNumberIfIsEqualsFiles(string pathCheckedItem)
         {
-
-            if (File.Exists(path + "\\" + name))
+            if (File.Exists(pathCheckedItem))
             {
+                string parentFolder = Directory.GetParent(pathCheckedItem).FullName;
+                string name = Path.GetFileNameWithoutExtension(pathCheckedItem);
+                string extension = Path.GetExtension(pathCheckedItem);
                 int suffixNewFile = 1;
-                while (File.Exists(path + "\\" + name + suffixNewFile.ToString()))
+                while (File.Exists(
+                    parentFolder + '\\' + name 
+                    + suffixNewFile.ToString() 
+                    + extension))
                 {
                     suffixNewFile++;
                 }
-                return suffixNewFile.ToString();
+                return parentFolder + '\\' + name
+                    + suffixNewFile.ToString()
+                    + extension;
             }
 
-            return String.Empty;
+            return pathCheckedItem;
         }
     }
-
-
-    
 }

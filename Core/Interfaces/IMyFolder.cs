@@ -19,10 +19,10 @@ namespace Core.Interfaces
         void CopyFolder(string oldName, string newName);
 
 
-        int SizeFolder(string name);
+        void SizeFolder(string name);
 
 
-        List<string> Search(string path, string name);
+        static List<Item> Search(string path, string name) => new List<Item>();
 
 
         IEnumerable<string> GetItemsInFolder();

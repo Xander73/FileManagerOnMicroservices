@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileManagerClient.Agent.Models.Responses
+namespace Core.Models.Responses
 {
     public class AllDrivesResponse
     {
