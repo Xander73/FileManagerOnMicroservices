@@ -88,26 +88,26 @@ namespace Core.Tests
         }
 
 
-        [Fact]
-        public void SizeFolder_CurrentFolder_TrueReturned()
-        {
-            int expected = 9;
+        //[Fact]
+        //public void SizeFolder_CurrentFolder_TrueReturned()
+        //{
+        //    int expected = 9;
 
-            int actual = myFolder.SizeFolder(myFolder.FullPath);
+        //    int actual = myFolder.SizeFolder(myFolder.FullPath);
 
-            Assert.Equal(expected, actual);
-        }
+        //    Assert.Equal(expected, actual);
+        //}
 
 
-        [Fact]
-        public void Search_DiskDCopyFolder_TrueReturned()
-        {
-            myFolder.CreateFolder("SearchedDirrectory");
-            List <string> expected = new List<string>() { @"D:\0_work\C#\FileManagerOnMicroservices\Core.Tests\bin\Debug\net6.0\TestDirectory\SearchedDirrectory" };
+        //[Fact]
+        //public void Search_DiskDCopyFolder_TrueReturned()
+        //{
+        //    myFolder.CreateFolder("SearchedDirrectory");
+        //    List <string> expected = new List<string>() { @"D:\0_work\C#\FileManagerOnMicroservices\Core.Tests\bin\Debug\net6.0\TestDirectory\SearchedDirrectory" };
 
-            var actual = myFolder.Search(myFolder.FullPath, "SearchedDirrectory");
+        //    var actual = myFolder.Search(myFolder.FullPath, "SearchedDirrectory");
 
-            Assert.Equal(expected, actual);
-        }
+        //    Assert.Equal(expected, actual);
+        //}
     }
 }

@@ -4,12 +4,6 @@ namespace Core.Interfaces
 {
     public interface IMyFile
     {
-        string NameToPath();
-
-
-        void CreateFile();
-
-
         void CreateFile(string name);
 
 

@@ -32,12 +32,26 @@ namespace FileManagerChanger.Controllers
             if (Directory.Exists(pathOldItem))
             {
                 MyFolder myFolder = new MyFolder(pathOldItem);
-                myFolder.CopyFolder(pathOldItem, pathNewItem);
+                try
+                {
+                    myFolder.CopyFolder(pathOldItem, pathNewItem);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError(nameof(PostCopy), myFolder);
+                }
             }
             else
             {
                 MyFile myFile = new MyFile(pathOldItem);
-                myFile.CopyFile(pathOldItem, pathNewItem);
+                try
+                {
+                    myFile.CopyFile(pathOldItem, pathNewItem);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError(nameof(PostCopy), myFile);
+                }
             }
         }
 
@@ -49,12 +63,27 @@ namespace FileManagerChanger.Controllers
             if (Directory.Exists(pathDelete))
             {
                 MyFolder myFolder = new MyFolder(pathDelete);
-                myFolder.DeleteFolder(pathDelete);
+                try
+                {
+                    myFolder.DeleteFolder(pathDelete);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError(nameof(pathDelete), myFolder);
+                }
+                
             }
             else
             {
                 MyFile myFile = new MyFile(pathDelete);
-                myFile.DeleteFile(pathDelete);
+                try
+                {
+                    myFile.DeleteFile(pathDelete);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError(nameof(pathDelete), myFile);
+                }
             }
         }
 
@@ -66,12 +95,29 @@ namespace FileManagerChanger.Controllers
             if (Directory.Exists(pathOldItem))
             {
                 MyFolder myFolder = new MyFolder(pathOldItem);
-                myFolder.RenameFolder(pathOldItem, newNameItem);
+                try
+                {
+
+                    myFolder.RenameFolder(pathOldItem, newNameItem);
+                }
+                catch (Exception)
+                {
+
+                    _logger.LogError(nameof(PostRename), myFolder);
+                }
             }
             else
             {
                 MyFile myFile = new MyFile(pathOldItem);
-                myFile.RenameFile(pathOldItem, newNameItem);
+                try
+                {
+                    myFile.RenameFile(pathOldItem, newNameItem);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError(nameof(PostRename), myFile);
+                }
+                
             }
         }
 
@@ -84,12 +130,28 @@ namespace FileManagerChanger.Controllers
             if (typeItem == TypeItem.Folder)
             {
                 MyFolder myFolder = new MyFolder(pathNewItem);
-                myFolder.CreateFolder(pathNewItem);
+                try
+                {
+                    myFolder.CreateFolder(pathNewItem);
+                }
+                catch (Exception)
+                {
+
+                    _logger.LogError(nameof(PostCreate), myFolder);
+                }
+                
             }
             else
             {
                 MyFile myFile = new MyFile(pathNewItem);
-                myFile.CreateFile(pathNewItem);
+                try
+                {
+                    myFile.CreateFile(pathNewItem);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError(nameof(PostCreate), myFile);
+                }
             }
         }
     }

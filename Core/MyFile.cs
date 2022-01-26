@@ -8,21 +8,15 @@ namespace Core
         {
             FullPath = fullPath;
             Name = Path.GetFileName(fullPath);
-        }
-
-
-        public string NameToPath() => '\\' + Name;
-
-        public void CreateFile()
-        {
-            using (File.Create(FullPath + '\\' + "New File")) { };
-            Name = "New File";
-        }
+        }   
 
 
         public void CreateFile(string pathNewFile)
         {
-            File.Create(pathNewFile);
+            if (!File.Exists(pathNewFile))
+            {
+                using var file = File.Create(pathNewFile);
+            }
         }
 
 
@@ -63,13 +57,13 @@ namespace Core
         public string GetFileAttributes()
         {
             string attributes = "";
-            return attributes += File.GetAttributes(FullPath + NameToPath()).ToString();
+            return attributes += File.GetAttributes(FullPath).ToString();
         }
 
         public string SetFileAttributes(FileAttributes attributes)
         {
-            File.SetAttributes(FullPath + NameToPath(), FileAttributes.Normal);
-            File.SetAttributes(FullPath + NameToPath(), attributes);
+            File.SetAttributes(FullPath, FileAttributes.Normal);
+            File.SetAttributes(FullPath, attributes);
             return GetFileAttributes(); ;
         }
 
@@ -99,7 +93,7 @@ namespace Core
         public bool IsTextFile () => Name.EndsWith(".txt");
 
 
-        public int GetParagraph(List<string> stringFromFile)
+        private int GetParagraph(List<string> stringFromFile)
         {
             int paragraphs = 0;
             int spases;
@@ -125,7 +119,7 @@ namespace Core
         }
 
 
-        public int GetWords(List<string> stringFromFile)
+        private int GetWords(List<string> stringFromFile)
         {
             int words = 0;
             foreach (string item in stringFromFile)
@@ -137,7 +131,7 @@ namespace Core
         }
 
 
-        public int GetChars(List<string> stringFromFile)
+        private int GetChars(List<string> stringFromFile)
         {
             int chars = 0;
             foreach (string item in stringFromFile)
@@ -149,7 +143,7 @@ namespace Core
         }
 
 
-        public int GetCharsWithoutSpace(List<string> stringFromFile)
+        private int GetCharsWithoutSpace(List<string> stringFromFile)
         {
             int charsWithoutSpases = 0;
             foreach (string item in stringFromFile)

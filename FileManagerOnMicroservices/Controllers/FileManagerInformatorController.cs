@@ -20,14 +20,7 @@ namespace FileManagerInformator.Controllers
         [HttpGet("index")]
         public IActionResult Index()
         {
-            _logger.LogInformation("FileManagerInformator::Index() was start");
-            string drives = "";
-            foreach (DriveInfo d in DriveInfo.GetDrives())
-            {
-                drives += d.Name + " - " + d.DriveType + '\n';
-            }
-                        
-            return Ok(drives);
+            return Ok("Colls FileManagerChanger");
         }
 
 
@@ -36,13 +29,23 @@ namespace FileManagerInformator.Controllers
         {
             _logger.LogInformation("FileManagerInformator::GetDrivers() was start");
             AllDrivesResponse drives = new();
-            DriveInfo[] drivesInfo = await Task.Run(() => DriveInfo.GetDrives());
-
-            foreach (DriveInfo d in drivesInfo)
+            try
             {
-                drives.Drives.Add(d.Name);
+                DriveInfo[] drivesInfo = await Task.Run(() => DriveInfo.GetDrives());
+                foreach (DriveInfo d in drivesInfo)
+                {
+                    drives.Drives.Add(d.Name);
+                }
+                return Ok(drives);
             }
-            return Ok(drives);
+            catch (Exception)
+            {
+                _logger?.LogError(nameof(GetDrivers));
+                throw;
+            }
+            
+
+            
         }
 
 
@@ -59,13 +62,13 @@ namespace FileManagerInformator.Controllers
                 {
                     objectsCurrentDirectory.Items.Add(BuildFolderDTO(folder));
                 }
+                return Ok(objectsCurrentDirectory);
             }
             catch (Exception e )
             {
-
-                string s = e.Message;
+                _logger.LogError(nameof(PostFolders));
             }
-            return Ok(objectsCurrentDirectory);
+            return Ok(new AllMyFoldersResponse());
         }
 
 
@@ -101,14 +104,14 @@ namespace FileManagerInformator.Controllers
                 {
                     filesCurrentDirectory.Items.Add(BuildFileDTO(file));
                 }
+                return Ok(filesCurrentDirectory);
             }
             catch (Exception e)
             {
-
-                string s = e.Message;
+                _logger.LogError(nameof(PostFiles));
             }
+            return Ok(new AllMyFilesResponse());
 
-            return Ok(filesCurrentDirectory);
         }
 
 
@@ -150,16 +153,33 @@ namespace FileManagerInformator.Controllers
                 case TypeItem.Folder:
                     {
                         MyFolder myFolder = new MyFolder(pathItem.FullPath);
-                        return Ok(myFolder.SizeFolder);
+                        try
+                        {
+                            return Ok(myFolder.SizeFolder);
+                        }
+                        catch (Exception)
+                        {
+                            _logger.LogError(nameof(PostSize), myFolder);
+                        }
+                        return Ok(nameof(PostSize));
                     }
 
                 case TypeItem.File:
                     {
-                        MyFile myFile = new MyFile(pathItem.FullPath);                        
-                        return Ok(myFile.SizeFile());
+                        MyFile myFile = new MyFile(pathItem.FullPath);
+                        try
+                        {
+                            return Ok(myFile.SizeFile());
+                        }
+                        catch (Exception)
+                        {
+                            _logger.LogError(nameof(PostSize), myFile); 
+                        }
+                        return Ok(nameof(PostSize));
+
                     }
 
-                default: throw new ArgumentException(nameof(pathItem));
+                default: return Ok(nameof(PostSize));
             }
         }
 
@@ -169,10 +189,19 @@ namespace FileManagerInformator.Controllers
         {
             _logger.LogInformation("FileManagerInformator::PostSize(string) was start");
             MyFolder myFolder = new MyFolder(pathItem);
-            myFolder.SizeFolder(pathItem);
-            return $"FoldersInFolder - {myFolder.FoldersInFolder}\n"
-                + $"FilesInFolder - {myFolder.FilesInFolder}\n"
-                + $"Size folder - {myFolder.SizeFolders}\n";
+            try
+            {
+                myFolder.SizeFolder(pathItem);
+                return $"FoldersInFolder - {myFolder.FoldersInFolder}\n"
+                    + $"FilesInFolder - {myFolder.FilesInFolder}\n"
+                    + $"Size folder - {myFolder.SizeFolders}\n";
+            }
+            catch (Exception)
+            {
+                _logger.LogError(nameof(Size), myFolder);
+            }
+            
+            return nameof(Size);
         }
 
 
@@ -181,9 +210,18 @@ namespace FileManagerInformator.Controllers
         {
             _logger.LogInformation("FileManagerInformator::PostSearchItems(string, string) was start");
             ALLItemsResponse response = new ALLItemsResponse();
+
+            try
+            {
+                await Task.Run(() => response.Items.AddRange(
+                   MyFolder.Search(pathFolder, searchNameItem)));
+            }
+            catch (Exception)
+            {
+
+                _logger.LogError(nameof(PostSearchItems), response);
+            }
             
-            await Task.Run(() => response.Items.AddRange(
-                MyFolder.Search(pathFolder, searchNameItem)));
 
             return Ok(response);
         }
