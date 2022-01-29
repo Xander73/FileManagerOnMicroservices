@@ -20,7 +20,7 @@ namespace FileManagerInformator.Controllers
         [HttpGet("index")]
         public IActionResult Index()
         {
-            return Ok("Colls FileManagerChanger");
+            return Ok("Colls FileManagerInformator");
         }
 
 
@@ -41,11 +41,8 @@ namespace FileManagerInformator.Controllers
             catch (Exception)
             {
                 _logger?.LogError(nameof(GetDrivers));
-                throw;
             }
-            
-
-            
+            return Ok(new AllDrivesResponse());
         }
 
 
@@ -145,46 +142,6 @@ namespace FileManagerInformator.Controllers
 
 
         [HttpPost("size")]
-        public async Task<IActionResult> PostSize(IItem pathItem)
-        {
-            _logger.LogInformation("FileManagerInformator::PostSize(IItem) was start");
-            switch (pathItem.FolderOrFile)
-            {
-                case TypeItem.Folder:
-                    {
-                        MyFolder myFolder = new MyFolder(pathItem.FullPath);
-                        try
-                        {
-                            return Ok(myFolder.SizeFolder);
-                        }
-                        catch (Exception)
-                        {
-                            _logger.LogError(nameof(PostSize), myFolder);
-                        }
-                        return Ok(nameof(PostSize));
-                    }
-
-                case TypeItem.File:
-                    {
-                        MyFile myFile = new MyFile(pathItem.FullPath);
-                        try
-                        {
-                            return Ok(myFile.SizeFile());
-                        }
-                        catch (Exception)
-                        {
-                            _logger.LogError(nameof(PostSize), myFile); 
-                        }
-                        return Ok(nameof(PostSize));
-
-                    }
-
-                default: return Ok(nameof(PostSize));
-            }
-        }
-
-
-        [HttpPost("size")]
         public string Size(string pathItem)
         {
             _logger.LogInformation("FileManagerInformator::PostSize(string) was start");
@@ -201,7 +158,7 @@ namespace FileManagerInformator.Controllers
                 _logger.LogError(nameof(Size), myFolder);
             }
             
-            return nameof(Size);
+            return "Error";
         }
 
 
@@ -218,10 +175,8 @@ namespace FileManagerInformator.Controllers
             }
             catch (Exception)
             {
-
                 _logger.LogError(nameof(PostSearchItems), response);
             }
-            
 
             return Ok(response);
         }

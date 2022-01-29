@@ -10,11 +10,13 @@ namespace Core.Models.Responses
     public class AllMyFoldersResponse
     {
         public List<MyFolderDTO> Items { get; set; }
+        public Exception ex;
 
 
         public AllMyFoldersResponse()
         {
             Items = new List<MyFolderDTO>();
+            ex = new Exception();
         }
     }
 }

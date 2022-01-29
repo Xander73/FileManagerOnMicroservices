@@ -146,7 +146,7 @@ namespace FileManagerChanger.Controllers
                 MyFile myFile = new MyFile(pathNewItem);
                 try
                 {
-                    myFile.CreateFile(pathNewItem);
+                    myFile.CreateFile(pathNewItem) ;
                 }
                 catch (Exception)
                 {

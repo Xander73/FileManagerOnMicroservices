@@ -10,16 +10,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using NLog.Web;
+using NLog;
 
 namespace FileManagerClient
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         //ILogger<FileManagerAgentClient> _logger = LoggerExtensions;
@@ -27,11 +25,15 @@ namespace FileManagerClient
         private Dictionary<string, MyFolderDTO> _folders;
         private Dictionary<string, List<Item>> searchItems;
         private string _pathFromCopy = "";
+        private Logger logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
+
         public MainWindow()
         {
             InitializeComponent();
             InitiliazeMainWindow();
             currentPath.Text = cmbDrives.Text;
+
         }
 
 
@@ -163,6 +165,7 @@ namespace FileManagerClient
 
             if (foldersFiles.SelectedItem.ToString().Contains("folder"))
             {
+                btnSize.IsEnabled = true;
                 if (_folders.ContainsKey(nameSelectedItem))
                 {
                     PrintInformationFolder(_folders[nameSelectedItem]);
@@ -183,6 +186,7 @@ namespace FileManagerClient
             }
             else
             {
+                btnSize.IsEnabled = false;
                 if (_files.ContainsKey(nameSelectedItem))
                 {
                     PrintInformationFile(_files[nameSelectedItem]);

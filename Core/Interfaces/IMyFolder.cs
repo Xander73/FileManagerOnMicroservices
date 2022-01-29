@@ -23,8 +23,5 @@ namespace Core.Interfaces
 
 
         static List<Item> Search(string path, string name) => new List<Item>();
-
-
-        IEnumerable<string> GetItemsInFolder();
     }
 }

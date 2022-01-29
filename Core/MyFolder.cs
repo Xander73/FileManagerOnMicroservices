@@ -67,7 +67,7 @@ namespace Core
                 }
                 catch (Exception e)
                 {
-                    string s = e.Message;
+                    throw e;
                 }
             }
         }
@@ -101,8 +101,7 @@ namespace Core
             }
             catch (Exception e)
             {
-                string s = e.Message;
-                return;
+                throw e;
             }
         }
 
@@ -117,7 +116,7 @@ namespace Core
         }
 
 
-        public static List<Item> SearchFolderInCurrentFolder(string path, string nameSearch)
+        private static List<Item> SearchFolderInCurrentFolder(string path, string nameSearch)
         {
             List<Item> results = new List<Item>();
             try
@@ -141,14 +140,14 @@ namespace Core
             catch (Exception e)
             {
 
-                string s = e.Message;
+                throw e;
             }
             
             return results;
         }
 
 
-        public static List<Item> SearchFilesInCurrentFolder(string path, string nameSearch)
+        private static List<Item> SearchFilesInCurrentFolder(string path, string nameSearch)
         {
             List<Item> results = new List<Item>();
             string[] files = Directory.GetFiles(path);
@@ -165,15 +164,6 @@ namespace Core
                 }
             }
             return results;
-        }
-
-
-        public IEnumerable<string> GetItemsInFolder()
-        {
-            string[] folders = Directory.GetDirectories(FullPath);
-            string[] files = Directory.GetFiles(FullPath);
-
-            return folders.Concat(files);
         }
     }
 }
