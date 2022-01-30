@@ -20,12 +20,11 @@ namespace FileManagerClient
 {
     public partial class MainWindow : Window
     {
-        //ILogger<FileManagerAgentClient> _logger = LoggerExtensions;
+        private static Logger _logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
         private Dictionary<string, MyFileDTO> _files;
         private Dictionary<string, MyFolderDTO> _folders;
         private Dictionary<string, List<Item>> searchItems;
         private string _pathFromCopy = "";
-        private Logger logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
 
         public MainWindow()
@@ -33,11 +32,12 @@ namespace FileManagerClient
             InitializeComponent();
             InitiliazeMainWindow();
             currentPath.Text = cmbDrives.Text;
+            _logger.Info("MainWindow initial");
 
         }
 
 
-        public void InitiliazeMainWindow()
+        private void InitiliazeMainWindow()
         {
             _files = new Dictionary<string, MyFileDTO>();
             _folders = new Dictionary<string, MyFolderDTO>();
@@ -54,34 +54,33 @@ namespace FileManagerClient
         }
 
 
-        public List<string> GetDrives()
+        private List<string> GetDrives()
         {
+            _logger.Info("Init MainWindow::GetDrives()");
             var drives = AgentConnect.GetAllDrives(new FileManagerInformatorAgentClient(
                 new HttpClient()));
+            if (drives.ex != null)
+            {
+                MessageBox.Show($"Возникла ошибка - {drives.ex.Message}", "Ошибка");
+                return new List<string>();
+            }
 
             return drives.Drives;
         }
 
 
-        public void SetDrive()
+        private void SetDrive()
         {
+            _logger.Info("Init MainWindow::SetDrive()");
             var drives = GetDrives();
             cmbDrives.ItemsSource = drives;
             cmbDrives.SelectedItem = drives[0];
         }
 
 
-        public List<string> GetDrives(object sender, MouseEventArgs e)
-        {
-            var drives = AgentConnect.GetAllDrives(new FileManagerInformatorAgentClient(
-                new HttpClient()));
-
-            return drives.Drives;
-        }
-
-
         public void PrintFilesFolders(string requiredFolder)
         {
+            _logger.Info("Init MainWindow::PrintFilesFolders(string)");
             currentPath.Text = requiredFolder;
             foldersFiles.Items.Clear();
             SetItemsInCurrentFolder(requiredFolder);
@@ -100,8 +99,9 @@ namespace FileManagerClient
         }
 
 
-        public void SetItemsInCurrentFolder(string pathFolder)
+        private void SetItemsInCurrentFolder(string pathFolder)
         {
+            _logger.Info("Init MainWindow::SetItemsInCurrentFolder(string)");
             _folders.Clear();
             _files.Clear();
 
@@ -117,21 +117,34 @@ namespace FileManagerClient
         }
 
 
-        public List<MyFileDTO> GetFiles(string currentPath)
+        private List<MyFileDTO> GetFiles(string currentPath)
         {
+            _logger.Info("Init MainWindow::GetFiles(string)");
             var items = AgentConnect.GetFilesCurrentDirrectory(
                 new FileManagerInformatorAgentClient(new HttpClient()),
                 currentPath);
+
+            if (items.ex != null)
+            {
+                MessageBox.Show($"Ошибка при получении файлов - {items.ex.Message}", "Ошибка");
+            }
 
             return items.Items;
         }
 
 
-        public List<MyFolderDTO> GetFolders(string currentPath)
+        private List<MyFolderDTO> GetFolders(string currentPath)
         {
-            var items = AgentConnect.GetFoldersCurrentDirrectory(
+            _logger.Info("Init MainWindow::GetFolders(string)");
+            var items = new AllMyFoldersResponse();
+            items = AgentConnect.GetFoldersCurrentDirrectory(
                 new FileManagerInformatorAgentClient(new HttpClient()),
                 currentPath);
+
+            if (items.ex != null)
+            {
+                MessageBox.Show($"Ошибка при получении папок - {items.ex.Message}", "Error");
+            }
 
             return items.Items;
         }
@@ -139,15 +152,20 @@ namespace FileManagerClient
 
         private void Rename_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::Rename_Click(object sender, RoutedEventArgs)");
             RenameWindow renameWindow = new RenameWindow();
 
             if (renameWindow.ShowDialog() == true)
             {
                 string selectedItem = foldersFiles.SelectedItem.ToString();
-                AgentConnect.RenameItem(
+                var result = AgentConnect.RenameItem(
                     new FileManagerChangerAgentClient(new HttpClient()),
                     currentPath.Text + '\\' + GetNameSelectedItem(selectedItem),
                     currentPath.Text + '\\' + renameWindow.newName.Text);
+                if (result.ex != null)
+                {
+                    MessageBox.Show($"Ошибка периименования - {result.ex.Message}", "Ошибка");
+                }
                 PrintFilesFolders(currentPath.Text);
             }
         }
@@ -155,7 +173,7 @@ namespace FileManagerClient
 
         private void foldersFiles_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
-
+            _logger.Info("Init MainWindow::foldersFiles_SelectionChanged_1(object sender, SelectionChangedEventArgs)");
             if (foldersFiles.SelectedItem == null)
             {
                 return;
@@ -210,22 +228,25 @@ namespace FileManagerClient
             btnDelete.IsEnabled = foldersFiles.SelectedItem != null;
         }
 
-        
-        public void PrintInformationFolder(MyFolderDTO folder)
+
+        private void PrintInformationFolder(MyFolderDTO folder)
         {
+            _logger.Info("Init MainWindow::PrintInformationFolder(MyFolderDTO)");
             SetInformationFolder(GetInformationFolder(folder));
             SetAttributesFolder(folder);
         }
 
 
-        public void SetInformationFolder(string informationFolder)
+        private void SetInformationFolder(string informationFolder)
         {
+            _logger.Info("Init MainWindow::SetInformationFolder(string)");
             tbItemInfo.Text = informationFolder;
         }
 
 
-        public string GetInformationFolder(MyFolderDTO folder)
+        private string GetInformationFolder(MyFolderDTO folder)
         {
+            _logger.Info("Init MainWindow::GetInformationFolder(MyFolderDTO)");
             string informationFolder = "Свойства текущей папки\n";
             informationFolder += $"Name - {folder.Name}\n";
 
@@ -233,29 +254,33 @@ namespace FileManagerClient
         }
 
 
-        public void SetAttributesFolder(MyFolderDTO folder)
+        private void SetAttributesFolder(MyFolderDTO folder)
         {
+            _logger.Info("Init MainWindow::SetAttributesFolder(MyFolderDTO)");
             chbHidden.IsChecked = folder.AttributesFolderProp.Hidden;
             chbReadOnly.IsChecked = folder.AttributesFolderProp.ReadOnly;
         }
 
 
-        public void PrintInformationFile(MyFileDTO file)
+        private void PrintInformationFile(MyFileDTO file)
         {
+            _logger.Info("Init MainWindow::PrintInformationFile(MyFileDTO)");
             SetInformationFile(GetInformationFile(file));
             SetAttributesFile(file);
         }
 
 
-        public void SetInformationFile(string informationFile)
+        private void SetInformationFile(string informationFile)
         {
+            _logger.Info("Init MainWindow::SetInformationFile(string)");
             tbItemInfo.Clear();
             tbItemInfo.Text = informationFile;
         }
 
 
-        public string GetInformationFile(MyFileDTO file)
+        private string GetInformationFile(MyFileDTO file)
         {
+            _logger.Info("Init MainWindow::GetInformationFile(MyFileDTO)");
             string informationFile = "Свойства текущего файла\n";
             informationFile += $"Name - {file.Name}\n";
             informationFile += $"Size - {file.AttributesFile.Size} kb\n";
@@ -273,15 +298,17 @@ namespace FileManagerClient
         }
 
 
-        public void SetAttributesFile(MyFileDTO file)
+        private void SetAttributesFile(MyFileDTO file)
         {
+            _logger.Info("Init MainWindow::SetAttributesFile(MyFileDTO)");
             chbHidden.IsChecked = file.AttributesFile.Hidden;
             chbReadOnly.IsChecked = file.AttributesFile.ReadOnly;
         }
 
 
-        public string GetNameSelectedItem(string selectedItem)
+        private string GetNameSelectedItem(string selectedItem)
         {
+            _logger.Info("Init MainWindow::GetNameSelectedItem(string)");
             if (selectedItem.Contains("folder"))
             {
                 return selectedItem.Remove(0, "folder | ".Length);
@@ -295,6 +322,7 @@ namespace FileManagerClient
 
         private void chbHidden_Checked(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::chbHidden_Checked(object sender, RoutedEventArgs)");
             CheckBox chb = (CheckBox)sender;
             string nameSelectedItem = GetNameSelectedItem(foldersFiles.SelectedItem.ToString());
             if (foldersFiles.SelectedItem.ToString().Contains("folder"))
@@ -309,6 +337,7 @@ namespace FileManagerClient
 
         private void chbReadOnly_Checked(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::chbReadOnly_Checked(object sender, RoutedEventArgs)");
             CheckBox chb = (CheckBox)sender;
             string nameSelectedItem = GetNameSelectedItem(foldersFiles.SelectedItem.ToString());
             if (foldersFiles.SelectedItem.ToString().Contains("folder"))
@@ -324,6 +353,7 @@ namespace FileManagerClient
 
         private void OnFoldersFiles_mouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            _logger.Info("Init MainWindow::OnFoldersFiles_mouseDoubleClick(object sender, MouseButtonEventArgs)");
             string currentItemName = GetNameSelectedItem(((ListBox)sender).SelectedItem.ToString());
             if (_folders.ContainsKey(currentItemName))
             {
@@ -361,18 +391,21 @@ namespace FileManagerClient
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::btnBack_Click(object sender, RoutedEventArgs)");
             PrintFilesFolders(Path.GetFullPath(currentPath.Text + "\\.."));
         }
 
 
         private void cmbDrives_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            _logger.Info("Init MainWindow::cmbDrives_SelectionChanged(object sender, SelectionChangedEventArgs)");
             currentPath.Text = cmbDrives.SelectedItem.ToString();
             PrintFilesFolders(currentPath.Text);
         }
 
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::btnCopy_Click(object sender, RoutedEventArgs)");
             btnPaste.IsEnabled = foldersFiles.SelectedItem != null;
             _pathFromCopy = currentPath.Text + '\\'
                 + GetNameSelectedItem(foldersFiles.SelectedItem.ToString());
@@ -380,21 +413,31 @@ namespace FileManagerClient
 
         private void btnPaste_Click(object sender, RoutedEventArgs e)
         {
-            AgentConnect.PostItemCopy(
+            _logger.Info("Init MainWindow::btnPaste_Click(object sender, RoutedEventArgs)");
+            var result = AgentConnect.PostItemCopy(
                 new FileManagerChangerAgentClient(new HttpClient()),
                 _pathFromCopy,
                 currentPath.Text + '\\' + Path.GetFileName(_pathFromCopy)
                 );
+            if (result.ex != null)
+            {
+                MessageBox.Show($"Ошибка вставки - {result.ex.Message}", "Ошибка");
+            }
 
             PrintFilesFolders(Path.GetFullPath(currentPath.Text));
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            AgentConnect.PostItemDelete(
+            _logger.Info("Init MainWindow::btnDelete_Click(object sender, RoutedEventArgs)");
+            var result = AgentConnect.PostItemDelete(
                 new FileManagerChangerAgentClient(new HttpClient()),
                 currentPath.Text + '\\'
                 + GetNameSelectedItem(foldersFiles.SelectedItem.ToString()));
+            if (result.ex != null)
+            {
+                MessageBox.Show($"Ошибка удаления - {result.ex.Message}", "Ошибка");
+            }
             PrintFilesFolders(currentPath.Text);
             btnDelete.IsEnabled = foldersFiles.SelectedItem != null;
         }
@@ -402,19 +445,21 @@ namespace FileManagerClient
 
         private void txtbFinde_GotFocus(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::txtbFinde_GotFocus(object sender, RoutedEventArgs)");
             tbSearch.Text = "";
         }
 
 
         private void btnFinde_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::btnFinde_Click(object sender, RoutedEventArgs)");
             ALLItemsResponse items = AgentConnect.GetSearchItem(
                 new FileManagerInformatorAgentClient(new HttpClient()),
                 currentPath.Text,
                 tbSearch.Text);
 
             if (items.Items.Count != 0)
-            {
+            {_logger.Info("Init MainWindow::SetDrive()");
                 foldersFiles.Items.Clear();
                 searchItems.Clear();
                 foreach (var item in items.Items)
@@ -448,6 +493,7 @@ namespace FileManagerClient
 
         private void btnCreate_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::btnCreate_Click(object sender, RoutedEventArgs)");
             CreateWindow createWindow = new CreateWindow();
 
             if (createWindow.ShowDialog() == true)
@@ -458,11 +504,15 @@ namespace FileManagerClient
                     return;
                 }
                 TypeItem typeNewItem = (bool)createWindow.rbFolder.IsChecked ? TypeItem.Folder : TypeItem.File;
-                AgentConnect.PostItemCreate(
+                var result = AgentConnect.PostItemCreate(
                 new FileManagerChangerAgentClient(new HttpClient()),
                 currentPath.Text + '\\'
                 + createWindow.NewName,
                 typeNewItem);
+                if (result.ex != null)
+                {
+                    MessageBox.Show($"Ошибка создания - {result.ex.Message}", "Ошибка");
+                }
                 PrintFilesFolders(currentPath.Text);
                 btnDelete.IsEnabled = foldersFiles.SelectedItem != null;
             }
@@ -471,6 +521,7 @@ namespace FileManagerClient
 
         private void Size_Click(object sender, RoutedEventArgs e)
         {
+            _logger.Info("Init MainWindow::Size_Click(object sender, RoutedEventArgs)");
             string pathSelectedItem = currentPath.Text
                 + GetNameSelectedItem(foldersFiles.SelectedItem.ToString());
             MyFolder folder = new MyFolder(pathSelectedItem);
@@ -484,5 +535,4 @@ namespace FileManagerClient
                 ); 
         }
     }
-
 }

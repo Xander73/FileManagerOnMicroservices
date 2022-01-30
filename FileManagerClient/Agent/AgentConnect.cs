@@ -48,7 +48,7 @@ namespace FileManagerClient.Agent
         }
 
 
-        public static void PostItemCopy(
+        public static ExceptionResponse PostItemCopy(
             IFileManagerChangerAgentClient fileManagerChangerAgentClient, 
             string pathFromCopy, 
             string pathToCopy)
@@ -60,11 +60,11 @@ namespace FileManagerClient.Agent
                 NewPath = pathToCopy
             };
 
-            fileManagerChangerAgentClient.CopyItem(copyRequest);
+            return fileManagerChangerAgentClient.CopyItem(copyRequest);
         }
 
 
-        public static void PostItemDelete(
+        public static ExceptionResponse PostItemDelete(
             IFileManagerChangerAgentClient fileManagerChangerAgentClient,
             string pathDelete)
         {
@@ -74,11 +74,11 @@ namespace FileManagerClient.Agent
                 PathDelete = pathDelete
             };
             
-            fileManagerChangerAgentClient.DeleteItem(deleteRequest);
+            return fileManagerChangerAgentClient.DeleteItem(deleteRequest);
         }
 
 
-        public static void RenameItem(
+        public static ExceptionResponse RenameItem(
             IFileManagerChangerAgentClient fileManagerChangerAgentClient, 
             string pathOldItem, 
             string newName)
@@ -90,7 +90,7 @@ namespace FileManagerClient.Agent
                 NewNameItem = newName
             };
 
-            fileManagerChangerAgentClient.RenameItem(renameRequest);
+            return fileManagerChangerAgentClient.RenameItem(renameRequest);
         }
 
 
@@ -110,7 +110,7 @@ namespace FileManagerClient.Agent
         }
 
 
-        public static void PostItemCreate (
+        public static ExceptionResponse PostItemCreate (
             IFileManagerChangerAgentClient fileManagerChangerAgentClient,
             string newName,
             TypeItem typeNewItem
@@ -123,7 +123,7 @@ namespace FileManagerClient.Agent
                 TypeItem = typeNewItem
             };
 
-            fileManagerChangerAgentClient.CreateItem(request);
+            return fileManagerChangerAgentClient.CreateItem(request);
         }
 
 

@@ -1,11 +1,9 @@
-﻿using Core;
-using Core.Models.Responses;
+﻿using Core.Models.Responses;
 using FileManagerInformator.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -155,7 +153,7 @@ namespace FileManagerInformator.Tests.Controllers
             string expected = $"FoldersInFolder - 0\n"
                     + $"FilesInFolder - 1\n"
                     + $"Size folder - 45\n";
-            string actual = fmi.Size(path);
+            string actual = fmi.Size(path).Size;
 
             Assert.Equal(expected, actual);
         }
@@ -166,7 +164,7 @@ namespace FileManagerInformator.Tests.Controllers
         {
             try
             {
-                string actual = fmi.Size(null);
+                string actual = fmi.Size(null).Size;
             }
             catch (Exception e)
             {
@@ -187,7 +185,7 @@ namespace FileManagerInformator.Tests.Controllers
             }
             try
             {
-                string actual = fmi.Size("wrongPath)(*&^%");
+                string actual = fmi.Size("wrongPath)(*&^%").Size;
             }
             catch (Exception e)
             {
@@ -201,7 +199,7 @@ namespace FileManagerInformator.Tests.Controllers
         {
             try
             {
-                string actual = fmi.Size("wrongPath)(*&^%");
+                string actual = fmi.Size("wrongPath)(*&^%").Size;
             }
             catch (Exception e)
             {

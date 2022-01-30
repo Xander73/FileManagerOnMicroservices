@@ -3,6 +3,7 @@ using FileManagerClient.Agent.Client.Interface;
 using System.Net.Http;
 using System.Text.Json;
 using System;
+using Core.Models.Responses;
 
 namespace FileManagerClient.Agent.Client
 {
@@ -18,8 +19,9 @@ namespace FileManagerClient.Agent.Client
             _httpClient = httpClient;
             _options = new JsonSerializerOptions();
         }
-        public void CopyItem(CopyItemRequest request)
+        public ExceptionResponse CopyItem(CopyItemRequest request)
         {
+            ExceptionResponse result = new ExceptionResponse();
             var httpRequest = new HttpRequestMessage(
                 HttpMethod.Post,
                 @$"{request.ClientBaseAddres}/api/filemanagerchanger/copy" +
@@ -27,16 +29,23 @@ namespace FileManagerClient.Agent.Client
             try
             {
                 var response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    result = JsonSerializer.DeserializeAsync<ExceptionResponse>(responseStream, _options).Result;
+
+                    return result;
+                }
             }
             catch (Exception e)
             {
-
-                Console.WriteLine(e.Message);
+                result.ex = e;
             }
+            return result;
         }
 
-        public void CreateItem(CreateRequest request)
+        public ExceptionResponse CreateItem(CreateRequest request)
         {
+            ExceptionResponse result = new ExceptionResponse();
             var httpRequest = new HttpRequestMessage(
                 HttpMethod.Post,
                 @$"{request.ClientBaseAddres}/api/filemanagerchanger/create" +
@@ -44,15 +53,23 @@ namespace FileManagerClient.Agent.Client
             try
             {
                 var response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    result = JsonSerializer.DeserializeAsync<ExceptionResponse>(responseStream, _options).Result;
+
+                    return result;
+                }
             }
             catch (Exception e)
             {
-                string s = e.Message;
+                result.ex = e;
             }
+            return result;
         }
 
-        public void DeleteItem(DeleteRequest request)
+        public ExceptionResponse DeleteItem(DeleteRequest request)
         {
+            ExceptionResponse result = new ExceptionResponse();
             var httpRequest = new HttpRequestMessage(
                 HttpMethod.Post,
                 @$"{request.ClientBaseAddres}/api/filemanagerchanger/delete" +
@@ -60,15 +77,23 @@ namespace FileManagerClient.Agent.Client
             try
             {
                 var response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    result = JsonSerializer.DeserializeAsync<ExceptionResponse>(responseStream, _options).Result;
+
+                    return result;
+                }
             }
             catch (Exception e)
             {
-                string s = e.Message;   
+                result.ex = e;
             }
+            return result;
         }
 
-        public void RenameItem(RenameItemRequest request)
+        public ExceptionResponse RenameItem(RenameItemRequest request)
         {
+            ExceptionResponse result = new ExceptionResponse();
             var httpRequest = new HttpRequestMessage(
                 HttpMethod.Post,
                 @$"{request.ClientBaseAddres}/api/filemanagerchanger/rename" +
@@ -76,12 +101,19 @@ namespace FileManagerClient.Agent.Client
             try
             {
                 var response = _httpClient.SendAsync(httpRequest).Result;
+                using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                {
+                    result = JsonSerializer.DeserializeAsync<ExceptionResponse>(responseStream, _options).Result;
+
+                    return result;
+                }
             }
             catch (Exception e)
             {
 
-                string s = e.Message;
+                result.ex = e;
             }
+            return result;
         }
     }
 }

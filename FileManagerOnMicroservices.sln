@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManagerClient", "FileMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManagerInformator.Tests", "FileManagerInformator.Tests\FileManagerInformator.Tests.csproj", "{DEF58374-1AB1-440C-8FD6-F88938F6A377}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManagerChanger.Tests", "FileManagerChanger.Tests\FileManagerChanger.Tests.csproj", "{DFF6294D-88E7-43C2-878B-C38F31B2F606}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileManagerChanger.Tests", "FileManagerChanger.Tests\FileManagerChanger.Tests.csproj", "{DFF6294D-88E7-43C2-878B-C38F31B2F606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

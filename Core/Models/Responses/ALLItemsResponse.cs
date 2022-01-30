@@ -3,13 +3,12 @@
     public class ALLItemsResponse
     {
         public List<Item> Items { get; set; }
-        public Exception ex;
+        public Exception ex = null;
 
 
         public ALLItemsResponse()
         {
             Items = new List<Item>();
-            ex = new Exception();
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using Core;
 using Core.Interfaces;
+using Core.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.IO;
 
 namespace FileManagerChanger.Controllers
 {
@@ -26,40 +29,52 @@ namespace FileManagerChanger.Controllers
 
 
         [HttpPost("copy")]
-        public void PostCopy(string pathOldItem, string pathNewItem)
+        public ExceptionResponse PostCopy(string pathOldItem, string pathNewItem)
         {
             _logger.LogInformation("FileManagerChanger::PostCopy(string, string) was start");
+            ExceptionResponse exceptionResponse = new ExceptionResponse();
             if (Directory.Exists(pathOldItem))
             {
                 MyFolder myFolder = new MyFolder(pathOldItem);
                 try
                 {
                     myFolder.CopyFolder(pathOldItem, pathNewItem);
+
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(PostCopy), myFolder);
                 }
             }
-            else
+            else if (System.IO.File.Exists(pathOldItem))
             {
+                
                 MyFile myFile = new MyFile(pathOldItem);
                 try
                 {
                     myFile.CopyFile(pathOldItem, pathNewItem);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(PostCopy), myFile);
                 }
             }
+            else
+            {
+                exceptionResponse.ex = new FileNotFoundException();
+            }
+
+            return exceptionResponse;
         }
 
 
         [HttpPost("delete")]
-        public void PostDelete(string pathDelete)
+        public ExceptionResponse PostDelete(string pathDelete)
         {
             _logger.LogInformation("FileManagerChanger::PostDelete(string) was start");
+            ExceptionResponse exceptionResponse = new ExceptionResponse();
             if (Directory.Exists(pathDelete))
             {
                 MyFolder myFolder = new MyFolder(pathDelete);
@@ -67,8 +82,9 @@ namespace FileManagerChanger.Controllers
                 {
                     myFolder.DeleteFolder(pathDelete);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(pathDelete), myFolder);
                 }
                 
@@ -80,18 +96,21 @@ namespace FileManagerChanger.Controllers
                 {
                     myFile.DeleteFile(pathDelete);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(pathDelete), myFile);
                 }
             }
+            return exceptionResponse;
         }
 
 
         [HttpPost("rename")]
-        public void PostRename(string pathOldItem, string newNameItem)
+        public ExceptionResponse PostRename(string pathOldItem, string newNameItem)
         {
             _logger.LogInformation("FileManagerChanger::PostRename(PostRename(string, string)) was start");
+            ExceptionResponse exceptionResponse = new ExceptionResponse();
             if (Directory.Exists(pathOldItem))
             {
                 MyFolder myFolder = new MyFolder(pathOldItem);
@@ -100,9 +119,9 @@ namespace FileManagerChanger.Controllers
 
                     myFolder.RenameFolder(pathOldItem, newNameItem);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(PostRename), myFolder);
                 }
             }
@@ -113,19 +132,21 @@ namespace FileManagerChanger.Controllers
                 {
                     myFile.RenameFile(pathOldItem, newNameItem);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(PostRename), myFile);
-                }
-                
+                }                
             }
+            return exceptionResponse;
         }
 
 
         [HttpPost("create")]
-        public void PostCreate(string pathNewItem, TypeItem typeItem)
+        public ExceptionResponse PostCreate(string pathNewItem, TypeItem typeItem)
         {
             _logger.LogInformation("FileManagerChanger::PostCreate(string, string) was start");
+            ExceptionResponse exceptionResponse = new ExceptionResponse();
 
             if (typeItem == TypeItem.Folder)
             {
@@ -134,9 +155,9 @@ namespace FileManagerChanger.Controllers
                 {
                     myFolder.CreateFolder(pathNewItem);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(PostCreate), myFolder);
                 }
                 
@@ -148,11 +169,13 @@ namespace FileManagerChanger.Controllers
                 {
                     myFile.CreateFile(pathNewItem) ;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    exceptionResponse.ex = e;
                     _logger.LogError(nameof(PostCreate), myFile);
                 }
             }
+            return exceptionResponse;
         }
     }
 }

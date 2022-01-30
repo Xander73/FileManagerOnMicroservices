@@ -38,8 +38,9 @@ namespace FileManagerInformator.Controllers
                 }
                 return Ok(drives);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                drives.ex = e;
                 _logger?.LogError(nameof(GetDrivers));
             }
             return Ok(new AllDrivesResponse());
@@ -59,10 +60,12 @@ namespace FileManagerInformator.Controllers
                 {
                     objectsCurrentDirectory.Items.Add(BuildFolderDTO(folder));
                 }
+                objectsCurrentDirectory.ex = new DirectoryNotFoundException();
                 return Ok(objectsCurrentDirectory);
             }
-            catch (Exception e )
+            catch (Exception e)
             {
+                objectsCurrentDirectory.ex = e;
                 _logger.LogError(nameof(PostFolders));
             }
             return Ok(new AllMyFoldersResponse());
@@ -105,6 +108,7 @@ namespace FileManagerInformator.Controllers
             }
             catch (Exception e)
             {
+                filesCurrentDirectory.ex = e;
                 _logger.LogError(nameof(PostFiles));
             }
             return Ok(new AllMyFilesResponse());
@@ -142,23 +146,25 @@ namespace FileManagerInformator.Controllers
 
 
         [HttpPost("size")]
-        public string Size(string pathItem)
+        public SizeResponse Size(string pathItem)
         {
             _logger.LogInformation("FileManagerInformator::PostSize(string) was start");
             MyFolder myFolder = new MyFolder(pathItem);
+            SizeResponse sr = new SizeResponse();
             try
             {
                 myFolder.SizeFolder(pathItem);
-                return $"FoldersInFolder - {myFolder.FoldersInFolder}\n"
+                sr.Size = $"FoldersInFolder - {myFolder.FoldersInFolder}\n"
                     + $"FilesInFolder - {myFolder.FilesInFolder}\n"
                     + $"Size folder - {myFolder.SizeFolders}\n";
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                sr.ex = e;
                 _logger.LogError(nameof(Size), myFolder);
             }
             
-            return "Error";
+            return sr;
         }
 
 
@@ -173,8 +179,9 @@ namespace FileManagerInformator.Controllers
                 await Task.Run(() => response.Items.AddRange(
                    MyFolder.Search(pathFolder, searchNameItem)));
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                response.ex = e;
                 _logger.LogError(nameof(PostSearchItems), response);
             }
 

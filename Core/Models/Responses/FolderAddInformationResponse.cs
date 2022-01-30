@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 
 namespace Core.Models.Responses
 {
@@ -6,12 +6,6 @@ namespace Core.Models.Responses
     {
         public string AddInformation { get; set; }
 
-        public Exception ex;
-
-
-        public FolderAddInformationResponse()
-        {
-            ex = new Exception();
-        }
+        public Exception ex = null;
     }
 }

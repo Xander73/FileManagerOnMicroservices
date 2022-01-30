@@ -1,18 +1,19 @@
 ﻿using Core.Models.Requests;
+using Core.Models.Responses;
 
 namespace FileManagerClient.Agent.Client.Interface
 {
     public interface IFileManagerChangerAgentClient
     {
-        void CreateItem(CreateRequest request);
+        ExceptionResponse CreateItem(CreateRequest request);
 
 
-        void DeleteItem(DeleteRequest request);
+        ExceptionResponse DeleteItem(DeleteRequest request);
 
 
-        void RenameItem(RenameItemRequest request);
+        ExceptionResponse RenameItem(RenameItemRequest request);
 
 
-        void CopyItem(CopyItemRequest request);
+        ExceptionResponse CopyItem(CopyItemRequest request);
     }
 }
