@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileManagerClient.Agent.Models.Requests
+namespace Core.Models.Requests
 {
-    public class CopyItem
+    public class CopyItemRequest
     {
-        public string NameItem { get; set; }
+        public string ClientBaseAddres { get; set; }
         public string NewPath { get; set; }
         public string OldPath { get; set; }
     }

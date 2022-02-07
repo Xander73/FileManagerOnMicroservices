@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    public enum TypeItem { NotExists, Folder, File}
+    public enum TypeItem { NotExists, Folder, File, TextFile}
+
 
     public interface IItem
     {
-        string Path { get; set; }
-        TypeItem IsFolderOrFile { get; set; }
+        string Name { get; set; }
+        string FullPath { get; set; }
+        TypeItem FolderOrFile { get; set; }
     }
 }

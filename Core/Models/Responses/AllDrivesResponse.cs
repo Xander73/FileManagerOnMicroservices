@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace FileManagerClient.Agent.Models.Responses
+namespace Core.Models.Responses
 {
     public class AllDrivesResponse
     {
         public List<string> Drives { get; set; }
+        public Exception ex = null;
 
 
         public AllDrivesResponse()
